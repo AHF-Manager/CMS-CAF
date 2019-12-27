@@ -7,6 +7,45 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+import { Form, HasError, AlertError } from 'vform';
+
+import swal from 'sweetalert2'
+window.swal = swal;
+
+const toast = swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 5000,
+});
+window.toast = toast;
+window.Form = Form;
+Vue.component(HasError.name, HasError)
+Vue.component(AlertError.name, AlertError)
+
+import VueRouter from 'vue-router'
+
+Vue.use(VueRouter)
+import VueProgressBar from 'vue-progressbar'
+Vue.use(VueProgressBar,{
+  color: 'rgb(143,255,199)',
+  failedcolor: 'red',
+  height: '7px'
+})
+
+let routes = [
+    { path: '/dashboard', component: require('./components/Dashboard.vue').default},
+    { path: '/profile', component: require('./components/Profile.vue').default},
+    { path: '/dailyacts', component: require('./components/Dailyacts.vue').default},
+
+  ]
+
+  const router = new VueRouter({
+    mode: 'history',
+    routes // short for `routes: routes`
+  })
+  
+window.Fire = new Vue();
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,7 +58,7 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('articles', require('./components/Articles.vue').default);
+Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,4 +68,5 @@ Vue.component('articles', require('./components/Articles.vue').default);
 
 const app = new Vue({
     el: '#app',
+    router
 });

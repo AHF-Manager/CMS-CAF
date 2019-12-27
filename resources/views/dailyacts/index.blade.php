@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.master')
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -7,7 +7,7 @@
                 <div class="card-header">
                     <div class="float-left">
 
-                        <form action="/dailyacts/search" method="GET">
+                        <form action="{{action('DailyactController@search')}}" method="GET">
                             @csrf
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control">
