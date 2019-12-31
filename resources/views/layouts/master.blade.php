@@ -33,38 +33,6 @@
                 </li>
             </ul>
             <!-- Right side navbar -->
-            <ul class="navbar-nav ml-auto">
-                <!-- Authentication Links -->
-                @guest
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                </li>
-                @if (Route::has('register'))
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                </li>
-                @endif
-                @else
-                <li class="nav-item dropdown">
-                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                        <i class="fa fa-user" aria-hidden="true"></i> {{ Auth::user()->name }} <span
-                            class="caret"></span>
-                    </a>
-
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
-                        </a>
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                    </div>
-                </li>
-                @endguest
-            </ul>
 
         </nav>
         <!-- /.navbar -->
@@ -79,7 +47,16 @@
 
             <!-- Sidebar -->
             <div class="sidebar">
-
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                      <img src="./images/boy.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                      <a href="#" class="d-block">
+                          {{Auth::user()->name}}
+                      </a>
+                    </div>
+                  </div>
 
 
                 <!-- Sidebar Menu -->
@@ -90,7 +67,7 @@
                with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <router-link to="/dashboard" class="nav-link">
-                                <i class="fas fa-tachometer-alt nav-icon orange"></i>
+                                <i class="fas fa-tachometer-alt nav-icon green"></i>
                                 <p>Dashboard</p>
                             </router-link>
                         </li>
@@ -100,35 +77,64 @@
                                 <p>Profile</p>
                             </router-link>
                         </li>
-                        <li class="nav-item">
-                            <router-link to="/dailyacts" class="nav-link">
-                                <i class="far fa-calendar nav-icon orange"></i>
-                                <p>Dailyacts</p>
+                        
+                        {{-- <li class="nav-item">
+                            <router-link to="/developer" class="nav-link">
+                                <i class="fas fa-cogs nav-icon orange"></i>
+                                <p>Developer</p>
                             </router-link>
-                        </li>
+                        </li> --}}
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link ">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <i class="nav-icon fas fa-database green"></i>
                                 <p>
                                     Database
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-
+                                <li class="nav-item">
+                                    <router-link to="/dailyacts" class="nav-link">
+                                        <i class="fas fa-calendar nav-icon teal"></i>
+                                        <p>Dailyacts</p>
+                                    </router-link>
+                                </li>
+                                <li class="nav-item">
+                                    <router-link to="#" class="nav-link">
+                                        <i class="fas fa-paw nav-icon teal"></i>
+                                        <p>Animal Details</p>
+                                    </router-link>
+                                </li> 
+                                <li class="nav-item">
+                                    <router-link to="#" class="nav-link">
+                                        <i class="fas fa-venus-mars nav-icon teal"></i>
+                                        <p>Breeding Details</p>
+                                    </router-link>
+                                </li> 
+                                <li class="nav-item">
+                                    <router-link to="#" class="nav-link">
+                                        <i class="fas fa-folder-open nav-icon teal"></i>
+                                        <p>Stock Register</p>
+                                    </router-link>
+                                </li> 
 
                             </ul>
+                            
                         </li>
-
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                            <a class="nav-link" href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
+                                          document.getElementById('logout-form').submit();">
+                                <i class="nav-icon fa fa-power-off red"></i>
                                 <p>
-                                    Simple Link
-
+                                    {{ __('Logout') }}
                                 </p>
-                            </a>
-                        </li>
+                             </a>
+            
+                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                             @csrf
+                         </form>
+                    </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -145,12 +151,7 @@
                         <div class="col-sm-6">
                             <h1 class="m-0 text-dark">Central Animal Facility</h1>
                         </div><!-- /.col -->
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Starter Page</li>
-                            </ol>
-                        </div><!-- /.col -->
+                        
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
             </div>

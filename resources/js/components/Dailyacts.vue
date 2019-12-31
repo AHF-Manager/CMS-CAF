@@ -17,7 +17,7 @@
                             </div>
                         </div>
                         <div class="float-right">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#addNew">Add New</button>
+                            <button class="btn btn-success" @click="addModal()">Add New</button>
                         </div>
                     </div>
                     <!-- /.card-header -->
@@ -49,12 +49,12 @@
                                     <td>{{dailyact.details}}</td>
                                     <td>{{dailyact.short_title}}</td>
                                     <td>
-                                        <a href="#">
-                                            <i class="fa fa-edit"></i>
+                                        <a href="#" @click="editModal(dailyact)">
+                                            <i class="fa fa-edit orange"></i>
                                         </a>
                                         /
                                         <a href="#" @click="deleteData(dailyact.id)">
-                                            <i class="fa fa-trash"></i>
+                                            <i class="fa fa-trash red"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -72,12 +72,14 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addNewLabel">Add New</h5>
+                        <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
+                        <h5 class="modal-title" v-show="editmode" id="addNewLabel">Update Data</h5>
+
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="addData">
+                    <form @submit.prevent="editmode ? updateData() : addData()">
                         <div class="modal-body">
                             <div class="form-group">
                                 <input v-model="form.dct_date" type="date" name="dct_date" class="form-control"
@@ -128,7 +130,9 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button v-show="editmode" type="submit" class="btn btn-success">Update</button>
+                            <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
+
                         </div>
                     </form>
                 </div>
@@ -140,9 +144,12 @@
 <script>
     export default {
         data() {
+
             return {
+                editmode: false,
                 dailyacts: {},
                 form: new Form({
+                    id: '',
                     dct_date: '',
                     day: '',
                     count: '',
@@ -156,38 +163,45 @@
             }
         },
         methods: {
-            deleteData(id) {
-                swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if(result.value){
-                    this.form.delete('api/dailyact/'+id).then(()=>{
-                        
+
+            //update data
+
+            updateData() {
+                // console.log('Yo its editing Data');
+                this.$Progress.start();
+                this.form.put('api/dailyact/' + this.form.id)
+                    .then(() => {
+                        $('#addNew').modal('hide');
+
                         swal.fire(
-                            'Deleted!',
-                            'Your file has been deleted.',
+                            'Updated!',
+                            'Your file has been Updated.',
                             'success'
                         )
+                        this.$Progress.finish();
                         Fire.$emit('refreshData');
 
-                    }).catch(()=>{
-                        swal('Failed','Something Went Teeribly Wrong');
-                    });
-                    }
 
-                    
-                })
+                    })
+                    .catch(() => {
+                        this.$Progress.fail();
+
+                    });
             },
-            loadData() {
-                axios.get('api/dailyact').then(({
-                    data
-                }) => (this.dailyacts = data.data));
+
+            editModal(dailyact) {
+                this.editmode = true;
+                this.form.reset();
+                $('#addNew').modal('show');
+                this.form.fill(dailyact);
+            },
+
+            // Add dataa
+
+            addModal() {
+                this.editmode = false;
+                this.form.reset();
+                $('#addNew').modal('show')
             },
             addData() {
                 this.$Progress.start();
@@ -205,7 +219,41 @@
 
                     })
 
-            }
+            },
+            deleteData(id) {
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        this.form.delete('api/dailyact/' + id).then(() => {
+
+                            swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                            Fire.$emit('refreshData');
+
+                        }).catch(() => {
+                            swal('Failed', 'Something Went Teeribly Wrong');
+                        });
+                    }
+
+
+                })
+            },
+            loadData() {
+                axios.get('api/dailyact').then(({
+                    data
+                }) => (this.dailyacts = data.data));
+            },
+
         },
         mounted() {
             this.loadData();
@@ -214,5 +262,4 @@
             });
         }
     }
-
 </script>

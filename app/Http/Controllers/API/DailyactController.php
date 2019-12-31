@@ -17,6 +17,10 @@ class DailyactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     public function index()
     {
         return DB::table('dailyacts')->paginate(12);
@@ -65,7 +69,20 @@ class DailyactController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $dct = Dailyact::findOrFail($id);
+        $this->validate($request,[
+            'dct_date' => 'required',
+            'day' => 'required',
+            'count' => 'required',
+            'activity' => 'required',
+            'phase' => 'required',
+            'sr_no' => 'required',
+            'iaec_no' => 'required',
+            'short_title' => 'required',
+
+        ]);
+        $dct ->update($request->all());
+        return ['message'=>'Update use info'];
     }
 
     /**
@@ -76,7 +93,7 @@ class DailyactController extends Controller
      */
     public function destroy($id)
     {
-        $user = Dailyact::findorFail($id);
+        $user = Dailyact::findOrFail($id);
         $user->delete();
        return ['message'=>'data deleted'];
     }
