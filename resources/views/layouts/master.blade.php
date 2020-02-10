@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -23,16 +23,19 @@
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
                 </li>
             </ul>
             <!-- Right side navbar -->
+            <div class="input-group  col-md-6">
+                <input class="form-control form-control-navbar" @keyup="searchit" v-model="search" type="search"
+                    placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-navbar" @click="searchit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
 
         </nav>
         <!-- /.navbar -->
@@ -49,14 +52,14 @@
             <div class="sidebar">
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                      <img src="./images/boy.png" class="img-circle elevation-2" alt="User Image">
+                        <img src="./images/boy.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                      <a href="#" class="d-block">
-                          {{Auth::user()->name}}
-                      </a>
+                        <a href="#" class="d-block">
+                            {{Auth::user()->name}}
+                        </a>
                     </div>
-                  </div>
+                </div>
 
 
                 <!-- Sidebar Menu -->
@@ -71,13 +74,27 @@
                                 <p>Dashboard</p>
                             </router-link>
                         </li>
+                        {{-- <li class="nav-item">
+                            <a href="{{route('fileupload')}}" class="nav-link">
+                                    <i class="fas fa-upload nav-icon green"></i>
+                                    <p>FileUpload</p>
+                                </a>
+                            </li> --}}
+                            {{-- <li class="nav-item">
+                                <router-link to="/example" class="nav-link">
+                                    <i class="fas fa-user nav-icon green"></i>
+                                    <p>example</p>
+                                </router-link>
+                            </li> --}}
+                        @can('isAdmin')
+                        
                         <li class="nav-item">
-                            <router-link to="/profile" class="nav-link">
+                            <router-link to="/users" class="nav-link">
                                 <i class="fas fa-user nav-icon green"></i>
-                                <p>Profile</p>
+                                <p>Manage Users</p>
                             </router-link>
                         </li>
-                        
+
                         {{-- <li class="nav-item">
                             <router-link to="/developer" class="nav-link">
                                 <i class="fas fa-cogs nav-icon orange"></i>
@@ -100,41 +117,47 @@
                                     </router-link>
                                 </li>
                                 <li class="nav-item">
-                                    <router-link to="#" class="nav-link">
+                                    <router-link to="/animalinfos" class="nav-link">
                                         <i class="fas fa-paw nav-icon teal"></i>
                                         <p>Animal Details</p>
                                     </router-link>
-                                </li> 
+                                </li>
                                 <li class="nav-item">
-                                    <router-link to="#" class="nav-link">
+                                    <router-link to="/breedings" class="nav-link">
                                         <i class="fas fa-venus-mars nav-icon teal"></i>
                                         <p>Breeding Details</p>
                                     </router-link>
-                                </li> 
+                                </li>
                                 <li class="nav-item">
-                                    <router-link to="#" class="nav-link">
+                                    <router-link to="/stocks" class="nav-link">
                                         <i class="fas fa-folder-open nav-icon teal"></i>
                                         <p>Stock Register</p>
                                     </router-link>
-                                </li> 
+                                </li>
 
                             </ul>
-                            
+
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                            onclick="event.preventDefault();
+                            <router-link to="/toxicitytesting" class="nav-link">
+                                <i class="fas fa-radiation-alt nav-icon green"></i>
+                                <p>Toxicity Testing</p>
+                            </router-link>
+                        </li>
+                        @endcan
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
                                           document.getElementById('logout-form').submit();">
                                 <i class="nav-icon fa fa-power-off red"></i>
                                 <p>
                                     {{ __('Logout') }}
                                 </p>
-                             </a>
-            
-                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                             @csrf
-                         </form>
-                    </li>
+                            </a>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -151,7 +174,7 @@
                         <div class="col-sm-6">
                             <h1 class="m-0 text-dark">Central Animal Facility</h1>
                         </div><!-- /.col -->
-                        
+
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
             </div>
@@ -162,8 +185,10 @@
                 <div class="container-fluid">
                     <router-view></router-view>
                     <vue-progress-bar></vue-progress-bar>
+                    
+                    
                     {{-- @include('partials.alerts') --}}
-                    {{-- @yield('content') --}}
+                    
                 </div>
             </div>
             <!-- /.content -->
@@ -184,14 +209,20 @@
         <footer class="main-footer">
             <!-- To the right -->
             <div class="float-right d-none d-sm-inline">
-                Anything you want
+                Central animal Facility MIS.
             </div>
             <!-- Default to the left -->
-            <strong>Copyright &copy; 2014-2019 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
+            <strong>Copyright  <a href="#">CAF SASTRA</a>.</strong> All rights
             reserved.
         </footer>
     </div>
     <!-- ./wrapper -->
+    @auth 
+    <script>
+        window.user = @json(auth()->user())
+    </script>
+    @endauth
+
 
     <script src="/js/app.js"></script>
 </body>

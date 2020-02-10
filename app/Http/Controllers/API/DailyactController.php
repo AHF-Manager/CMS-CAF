@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+use App\Exports\DailyactsExport;
+use App\Imports\DailyactsImport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 
 
@@ -23,7 +24,7 @@ class DailyactController extends Controller
     }
     public function index()
     {
-        return DB::table('dailyacts')->paginate(12);
+        return DB::table('dailyacts')->paginate(10);
 
     }
 
@@ -84,6 +85,12 @@ class DailyactController extends Controller
         $dct ->update($request->all());
         return ['message'=>'Update use info'];
     }
+    public function import(Request $request){
+
+        Excel::import(new DailyactsImport(),$request->pic);
+       //  return redirect()->route('dailyacts.index');
+
+   }
 
     /**
      * Remove the specified resource from storage.
@@ -96,5 +103,17 @@ class DailyactController extends Controller
         $user = Dailyact::findOrFail($id);
         $user->delete();
        return ['message'=>'data deleted'];
+    }
+    public function search(){
+        if($search = \Request::get('q')){
+            $dcts = Dailyact::where(function($query) use ($search){
+                $query->where('activity','LIKE',"%$search%")
+                        ->orWhere('day','LIKE',"%$search%")
+                        ->orWhere('dct_date','LIKE',"%$search%");
+            })->paginate(5);
+        }else{
+          $dcts =  DB::table('dailyacts')->paginate(12);
+        }
+        return $dcts;
     }
 }

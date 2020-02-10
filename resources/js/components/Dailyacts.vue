@@ -1,44 +1,38 @@
 <template>
-    <div class="container">
-        <div class="row">
+    <div class="container col-md-12">
+        <div class="row " v-if="$gate.isAdmin()">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
 
-
-
-                        <div class="float-left">
-                            <div class="input-group">
-                                <input type="search" name="search" class="form-control">
-                                <span class="input-group-prepend">
-                                    <button type="submit" title="Search" class="btn btn-primary"><i class="fa fa-search"
-                                            aria-hidden="true"></i></button>
-                                </span>
-                            </div>
+                        <div class="card-title">
+                            <h4>Daily Activity Table</h4>
                         </div>
-                        <div class="float-right">
-                            <button class="btn btn-success" @click="addModal()">Add New</button>
+
+                        <div class="card-tools">
+                            <button class="btn btn-success"  @click="addModal()"><i class="fas fa-plus "
+                                            aria-hidden="true"></i>&nbsp;Add New</button>
                         </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover">
+                        <table class="table table-hover table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Day</th>
-                                    <th>Count</th>
-                                    <th>Activity</th>
-                                    <th>Phase</th>
-                                    <th>SR_NO</th>
-                                    <th>IAEC_NO</th>
-                                    <th>Details</th>
-                                    <th>Short title</th>
-                                    <th>Action</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Day</th>
+                                    <th scope="col">Count</th>
+                                    <th scope="col">Activity</th>
+                                    <th scope="col">Phase</th>
+                                    <th scope="col">SR_NO</th>
+                                    <th scope="col">IAEC_NO</th>
+                                    <th scope="col">Details</th>
+                                    <th scope="col">Short title</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="dailyact in dailyacts" :key="dailyact.id">
+                                <tr v-for="dailyact in dailyacts.data" :key="dailyact.id">
                                     <td>{{dailyact.dct_date}}</td>
                                     <td>{{dailyact.day}}</td>
                                     <td>{{dailyact.count}}</td>
@@ -49,13 +43,13 @@
                                     <td>{{dailyact.details}}</td>
                                     <td>{{dailyact.short_title}}</td>
                                     <td>
-                                        <a href="#" @click="editModal(dailyact)">
+                                        <button class="btn btn-sm btn-light" @click="editModal(dailyact)">
                                             <i class="fa fa-edit orange"></i>
-                                        </a>
-                                        /
-                                        <a href="#" @click="deleteData(dailyact.id)">
+                                        </button>
+                                        
+                                        <button class="btn btn-sm btn-light" @click="deleteData(dailyact.id)">
                                             <i class="fa fa-trash red"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
 
@@ -63,9 +57,35 @@
                         </table>
                     </div>
                     <!-- /.card-body -->
+                    <div class="card-footer">
+                        <pagination :data="dailyacts" @pagination-change-page="getResults"></pagination>
+                    </div>
                 </div>
                 <!-- /.card -->
             </div>
+            
+            <div class="col-md-12">
+                <div class="card">
+                    <!-- <div class="card-header">
+                        Export data to Excel Format
+                        <button type="button" @click="downloadData()" class="btn btn-primary btn-sm float-right"><i
+                                class="fa fa-download" aria-hidden="true"></i>&nbsp; Download</button>
+                    </div> -->
+                    <div class="card-body">
+                        <p>Choose Excel file to import into Database</p>
+
+                            <div class="input-group">
+                                <input type="file" name="import_file" @change="fieldchange">
+                                <span class="input-group-prepend">
+                                    <button type="button" @click="uploadfile" class="btn btn-success btn-sm "><i class="fas fa-upload "
+                                            aria-hidden="true"></i>&nbsp; Upload</button>
+
+                                </span>
+                            </div>
+                    </div>
+                </div>
+            </div>
+    
         </div>
         <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel"
             aria-hidden="true">
@@ -148,6 +168,8 @@
             return {
                 editmode: false,
                 dailyacts: {},
+                attachment:null,
+                forms: new FormData,
                 form: new Form({
                     id: '',
                     dct_date: '',
@@ -165,14 +187,40 @@
         methods: {
 
             //update data
+            getResults(page = 1) {
+                axios.get('api/dailyact?page=' + page)
+                    .then(response => {
+                        this.dailyacts = response.data;
+                    });
+            },
+            fieldchange(e){
+               
+                let selectedfile = e.target.files[0];
+                this.attachment=selectedfile;
+                // console.log(e);
+            },
+            uploadfile(){
+                this.forms.append('pic',this.attachment);
+                const config ={headers:{'Content-Type':'multipart/formdata'}};
+                axios.post('api/import',this.forms,config)
+                .then(response=>{
+                    Fire.$emit('refreshData');
+                     swal.fire(
+                                'uploaded',
+                                'Your file has been uploaded.',
+                                'success'
+                            )
+                })
+                .catch(response=>{
 
+                })
+            },
             updateData() {
                 // console.log('Yo its editing Data');
                 this.$Progress.start();
                 this.form.put('api/dailyact/' + this.form.id)
                     .then(() => {
                         $('#addNew').modal('hide');
-
                         swal.fire(
                             'Updated!',
                             'Your file has been Updated.',
@@ -180,24 +228,18 @@
                         )
                         this.$Progress.finish();
                         Fire.$emit('refreshData');
-
-
                     })
                     .catch(() => {
                         this.$Progress.fail();
-
                     });
             },
-
             editModal(dailyact) {
                 this.editmode = true;
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(dailyact);
             },
-
             // Add dataa
-
             addModal() {
                 this.editmode = false;
                 this.form.reset();
@@ -218,7 +260,6 @@
                     .catch(() => {
 
                     })
-
             },
             deleteData(id) {
                 swal.fire({
@@ -244,18 +285,30 @@
                             swal('Failed', 'Something Went Teeribly Wrong');
                         });
                     }
-
-
                 })
             },
             loadData() {
-                axios.get('api/dailyact').then(({
-                    data
-                }) => (this.dailyacts = data.data));
+                if(this.$gate.isAdmin()){
+                    axios.get('api/dailyact')
+                    .then(({
+                        data
+                    }) => (this.dailyacts = data));
+                }
+                
             },
 
         },
-        mounted() {
+        created() {
+            Fire.$on('searching', () => {
+                let query = this.$parent.search;
+                axios.get('api/findDAdata?q=' + query)
+                    .then((data) => {
+                        this.dailyacts = data.data
+                    })
+                    .catch(() => {
+
+                    })
+            })
             this.loadData();
             Fire.$on('refreshData', () => {
                 this.loadData();
