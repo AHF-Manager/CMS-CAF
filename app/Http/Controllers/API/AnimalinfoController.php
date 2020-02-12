@@ -22,7 +22,7 @@ class AnimalinfoController extends Controller
     }
     public function index()
     {
-        return DB::table('animalinfos')->paginate(12);
+        return DB::table('animalinfos')->orderBy('id','DESC')->paginate(12);
         
     }
 

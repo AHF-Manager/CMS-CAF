@@ -24,7 +24,9 @@ class UserController extends Controller
     {
         // $this->authorize('isAdmin');
          
-         return User::latest()->paginate(5);
+        if (\Gate::allows('isAdmin') ) {
+            return User::latest()->paginate(5);
+        }
         
     }
     /**
@@ -85,7 +87,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        // $this->authorize('isAdmin');
+        $this->authorize('isAdmin');
         $user = User::findOrFail($id);
         // delete the user
         $user->delete();

@@ -21,7 +21,7 @@ class BreedingController extends Controller
     }
     public function index()
     {
-        return DB::table('breedings')->paginate(7);     
+        return DB::table('breedings')->orderBy('id','DESC')->paginate(7);     
     }
 
     /**
@@ -113,6 +113,8 @@ class BreedingController extends Controller
             $brds = Breeding::where(function($query) use ($search){
                 $query->where('breed','LIKE',"%$search%")
                         ->orWhere('start','LIKE',"%$search%")
+                        ->orWhere('male_id','LIKE',"%$search%")
+                        ->orWhere('female_id','LIKE',"%$search%")
                         ->orWhere('weaning','LIKE',"%$search%");
             })->paginate(5);
         }else{

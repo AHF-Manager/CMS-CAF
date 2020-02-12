@@ -4,9 +4,9 @@
         <div class="row justify-column-center">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Analysis
+                    <div class="card-header">Bodyweight Data
                         <button class="float-right btn btn-primary btn-sm"
-                            @click="calculateMean(); calculateSD(); outlierCalc();"> Calculate</button>
+                            @click="outlierCalc"> <i class="fas fa-calculator"></i> Calculate</button>
                     </div>
                     <div class="card-body table-responsive">
                         <div class="form group">
@@ -56,7 +56,7 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Food-intake Inputs
+                    <div class="card-header">Food-Intake data
 
                         <button @click="addData" class="btn btn-primary btn-sm float-right"><i class="fas fa-plus"></i> ADD</button>
                     </div>
@@ -100,7 +100,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Analysis Data
+                        bodyweight view
                     </div>
                     <div class="car-body table-responsive p-0">
                         <table class="table table-bordered" id="mytables">
@@ -139,7 +139,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Food Intake Data
+                        Food-Intake veiw
                         <div class="float-right">
 
                             <div class="input-group">
@@ -193,21 +193,21 @@
                 </div>
             </div>
         </div>
+        <div class="mb-3"></div>
         <div class="row justify-column-center">
-            <div id="accordion">
+            <div class="col-md-5">
+
                 <div class="pannel">
                     <div class="pannel-header" id="headingTwo">
                         <h5 class="mb-0">
-                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
-                                aria-expanded="false" aria-controls="collapseTwo">
-                                Mean, stDev ,Outlier Calculator.
-                            </button>
+                            
+                             Mean, stDev ,Outlier Calculator.
+                            
                         </h5>
                     </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="pannel-body">
                             <p>Enter the values seperated by commas (or) upload xlsx file</p>
-                            <textarea name="dta" id="outlierData" cols="50" rows="7"></textarea>
+                            <textarea name="dta" id="outlierData" cols="48" rows="7"></textarea>
                         </div>
                         <div class="pannel-footer">
                             <div class="form-group">
@@ -221,9 +221,8 @@
                             <span id='ansd'></span>
 
                         </div>
-                    </div>
                 </div>
-            </div>
+        </div>
         </div>
 
     </div>
@@ -338,7 +337,7 @@
             removeAnaData() {
                 swal.fire({
                     title: 'Do you wanna delete Entire Data?',
-                    text: "You won't be able to revert this!",
+                    text: "Export the data before Reseting the table",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -362,7 +361,7 @@
             removeFdData() {
                 swal.fire({
                     title: 'Do you wanna delete Entire Data?',
-                    text: "You won't be able to revert this!",
+                    text: "Export the data before Reseting the table",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -507,35 +506,7 @@
 
                 }
             },
-            calculateMean() {
-                var subtotal;
-                var avglg = this.bdweights.length;
-                subtotal = this.bdweights.reduce(function (sum, product) {
-                    var lineTotal = parseFloat(product.weight);
-                    if (!isNaN(lineTotal)) {
-                        var avg = sum + lineTotal;
-                        return avg;
-                    }
-                }, 0);
-                var means = (subtotal / avglg).toFixed(2);
-                this.bdweights.mean = means;
-
-            },
-            calculateSD() {
-                const n = this.bdweights.length;
-                let me = this.bdweights.reduce((a, b) => {
-                    let metot = parseFloat(b.weight);
-                    if (!isNaN(metot)) {
-                        let mee = a + metot;
-                        return mee;
-                    }
-                }, 0) / n;
-                const s = Math.sqrt(this.bdweights.map(x => Math.pow(x.weight - me, 2)).reduce((a, b) => a + b, 0) / n);
-                // console.log(s.toFixed(2));
-                this.bdweights.sd = s.toFixed(2);
-                let nv;
-                nv = this.bdweights.sd;
-            },
+            
             pushdata() {
                 let nv, mv, dv, ov;
                 ov = this.outResult;
@@ -590,13 +561,16 @@
                 });
             },
             outlierCalc() {
-                // const s = this.bdweights.map(x => grubbs.test(x.weight))
-                // var result = grubbs.test(dataSet);
-                // result.forEach(element => {
-                //     console.log(element.outliers)
-                // });
-                // let ab = this.bdweights.weight;
-                // this.outlier.push(ab);
+                let val = document.getElementById('bdweight').value;
+                if(val === ''){
+                    swal.fire(
+                        'Error',
+                        'please enter the body Weight.',
+                        'error'
+                    )
+                }else{
+
+                
                 let ad = this.bdweights.map(element => {
                     return parseFloat(element.weight);
                 });
@@ -621,11 +595,40 @@
                 } else {
                     this.outResult = 'None';
                 }
+                // calculate Mean
+
+                var subtotal;
+                var avglg = this.bdweights.length;
+                subtotal = this.bdweights.reduce(function (sum, product) {
+                    var lineTotal = parseFloat(product.weight);
+                    if (!isNaN(lineTotal)) {
+                        var avg = sum + lineTotal;
+                        return avg;
+                    }
+                }, 0);
+                var means = (subtotal / avglg).toFixed(2);
+                this.bdweights.mean = means;
+
+                //calculate stDev
+
+                const n = this.bdweights.length;
+                let me = this.bdweights.reduce((a, b) => {
+                    let metot = parseFloat(b.weight);
+                    if (!isNaN(metot)) {
+                        let mee = a + metot;
+                        return mee;
+                    }
+                }, 0) / n;
+                const s = Math.sqrt(this.bdweights.map(x => Math.pow(x.weight - me, 2)).reduce((a, b) => a + b, 0) / n);
+                this.bdweights.sd = s.toFixed(2);
+                let nv;
+                nv = this.bdweights.sd;
 
                 this.pushdata();
-                // let boxvalue = document.getElementById('bdweight').value
-                // this.outlier.push(boxvalue);
-            },
+                }
+                
+                
+           },
             remove(analysi) {
                 let rem = this.analysis.indexOf(analysi);
                 swal.fire({

@@ -16,7 +16,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-bordered">
+                        <table class="table table-hover table-bordered" id="mytable">
                             <thead>
                                 <tr>
                                     <th rowspan="2" >Species</th>
@@ -78,6 +78,9 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
+                        <div class="float-right">
+                            <button class="btn btn-primary btn-sm" id="button-a" @click="exportExcel('xlsx')"><i class="fas fa-download"></i> Export</button>
+                        </div>
                         <pagination :data="stocks" @pagination-change-page="getResults"></pagination>
                     </div>
                 </div>
@@ -114,10 +117,10 @@
                                                 <has-error :form="form" field="species"></has-error>
                                             </div>
                                             <div class="form-group">
-                                                <input v-model="form.st_date" type="date" name="st_date"
+                                                <input v-model="form.st_date" type="text" onfocus="(this.type='date')" name="st_date"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('st_date') }"
-                                                    placeholder="opening Balance male">
+                                                    placeholder="Date">
                                                 <has-error :form="form" field="st_date"></has-error>
                                             </div>
                                         </div>
@@ -133,14 +136,14 @@
                                                 <input :value="this.form.ob_m" @change="addOBm" type="number" name="ob_m"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('ob_m') }"
-                                                    placeholder="opening Balance male">
+                                                    placeholder="Opening Balance male">
                                                 <has-error :form="form" field="ob_m"></has-error>
                                             </div>
                                             <div class="form-group">
                                                 <input :value="this.form.ob_f" @change="addOBf" type="number" name="ob_f"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('ob_f') }"
-                                                    placeholder="opening Balance Female">
+                                                    placeholder="Opening Balance Female">
                                                 <has-error :form="form" field="ob_f"></has-error>
                                             </div>
                                             <div class="form-group">
@@ -161,21 +164,21 @@
                                                 <input :value="this.form.cb_m" @change="addCBm" type="number" name="cb_m"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('cb_m') }"
-                                                    placeholder="closing balance Male">
+                                                    placeholder="Closing balance Male">
                                                 <has-error :form="form" field="cb_m"></has-error>
                                             </div>
                                             <div class="form-group">
                                                 <input :value="this.form.cb_f" @change="addCBf" type="number" name="cb_f"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('cb_f') }"
-                                                    placeholder="closing balance Female">
+                                                    placeholder="Closing balance Female">
                                                 <has-error :form="form" field="cb_f"></has-error>
                                             </div>
                                             <div class="form-group">
                                                 <input v-model="form.cb_t" type="number" name="cb_t"
                                                     class="form-control"
                                                     :class="{ 'is-invalid': form.errors.has('cb_t') }"
-                                                    placeholder="total">
+                                                    placeholder="Total">
                                                 <has-error :form="form" field="cb_t"></has-error>
                                             </div>
                                         </div>
@@ -282,7 +285,7 @@
             return {
                 editmode: false,
                 stocks: {},
-                specs:['Rat','Mice','Ginny pig'],
+                specs:['Rat','Mouse','Guinea  pig'],
                 form: new Form({
                     id: '',
                     species: '',
@@ -315,6 +318,13 @@
             addOBm(event){
                 this.form.ob_m = event.target.value;
                 this.form.ob_t = parseInt(this.form.ob_m)  + parseInt(this.form.ob_f);
+            },
+            exportExcel(type, fn, dl){
+                 var elt = document.getElementById('mytable');
+                 var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+                return dl ?
+                XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
+                    XLSX.writeFile(wb, fn || ('stock.' + (type || 'xlsx')));
             },
             addOBf(event){
                 this.form.ob_f = event.target.value;
@@ -419,7 +429,11 @@
                         this.stocks = data.data
                     })
                     .catch(() => {
-
+                         swal.fire(
+                                'Oops',
+                                'Nothing found.',
+                                'error'
+                            )
                     })
             })
             this.loadData();

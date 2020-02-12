@@ -16,7 +16,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-bordered">
+                        <table class="table table-hover table-bordered" id="mytable">
                             <thead>
                                 <tr>
                                     <th scope="col">Date</th>
@@ -58,6 +58,9 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
+                        <div class="float-right">
+                            <button class="btn btn-primary btn-sm" id="button-a" @click="exportExcel('xlsx')"><i class="fas fa-download"></i> Export</button>
+                        </div>
                         <pagination :data="dailyacts" @pagination-change-page="getResults"></pagination>
                     </div>
                 </div>
@@ -102,7 +105,7 @@
                     <form @submit.prevent="editmode ? updateData() : addData()">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.dct_date" type="date" name="dct_date" class="form-control"
+                                <input v-model="form.dct_date" type="text" onfocus="(this.type='date')" name="dct_date" class="form-control"
                                     :class="{ 'is-invalid': form.errors.has('dct_date') }" placeholder="Date">
                                 <has-error :form="form" field="dct_date"></has-error>
                             </div>
@@ -123,7 +126,7 @@
                             </div>
                             <div class="form-group">
                                 <input v-model="form.phase" type="text" name="phase" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('phase') }" placeholder="phase">
+                                    :class="{ 'is-invalid': form.errors.has('phase') }" placeholder="Phase">
                                 <has-error :form="form" field="phase"></has-error>
                             </div>
                             <div class="form-group">
@@ -245,6 +248,13 @@
                 this.form.reset();
                 $('#addNew').modal('show')
             },
+            exportExcel(type, fn, dl){
+                 var elt = document.getElementById('mytable');
+                 var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+                return dl ?
+                XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
+                    XLSX.writeFile(wb, fn || ('dailyacts.' + (type || 'xlsx')));
+            },
             addData() {
                 this.$Progress.start();
                 this.form.post('api/dailyact')
@@ -313,6 +323,6 @@
             Fire.$on('refreshData', () => {
                 this.loadData();
             });
-        }
+        },
     }
 </script>

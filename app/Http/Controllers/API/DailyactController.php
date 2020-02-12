@@ -24,7 +24,7 @@ class DailyactController extends Controller
     }
     public function index()
     {
-        return DB::table('dailyacts')->paginate(10);
+        return DB::table('dailyacts')->orderBy('id','DESC')->paginate(10);
 
     }
 

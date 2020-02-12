@@ -17,14 +17,14 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table  table-hover table-bordered">
+                        <table class="table  table-hover table-bordered" id="mytable">
                             <thead>
                                 <tr>
                                     <th scope="col">Breed</th>
                                     <th scope="col">Date_of_cohabitation</th>
                                     <th scope="col">Sire #</th>
                                     <th scope="col">Dam #</th>
-                                    <th scope="col">Date_of_Seperation</th>
+                                    <th scope="col">Date_of_Separation</th>
                                     <th scope="col">Date_of_Delivery</th>
                                     <th scope="col">LITTER male</th>
                                     <th scope="col">LITTER female</th>
@@ -63,7 +63,7 @@
                                         <button class="btn btn-sm btn-light" @click="editModal(breeding)">
                                             <i class="fa fa-edit orange"></i>
                                         </button>
-                                        
+
                                         <button class="btn btn-sm btn-light" @click="deleteData(breeding.id)">
                                             <i class="fa fa-trash red"></i>
                                         </button>
@@ -75,6 +75,10 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
+                        <div class="float-right">
+                            <button class="btn btn-primary btn-sm" id="button-a" @click="exportExcel('xlsx')"><i
+                                    class="fas fa-download"></i> Export</button>
+                        </div>
                         <pagination :data="breedings" @pagination-change-page="getResults"></pagination>
                     </div>
                 </div>
@@ -99,7 +103,7 @@
         </div>
         <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
@@ -111,92 +115,136 @@
                     </div>
                     <form @submit.prevent="editmode ? updateData() : addData()">
                         <div class="modal-body">
-                            <div class="form-group">
-                                <select v-model="form.breed"  name="breed" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('breed') }">
-                                <option value="" disabled selected>Species</option>
+                            <div class="row justify-content-center">
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header"> Cohabitation & Separate</div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <select v-model="form.breed" name="breed" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('breed') }">
+                                                    <option value="" disabled selected>Species</option>
 
-                                <option v-for="(spec,k) in specs" :key="k">{{spec}}</option>
+                                                    <option v-for="(spec,k) in specs" :key="k">{{spec}}</option>
 
-                                </select>
-                                <has-error :form="form" field="breed"></has-error>
+                                                </select>
+                                                <has-error :form="form" field="breed"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.start" type="text" onfocus="(this.type='date')" @change="addDate" name="start"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('start') }"
+                                                    placeholder="Cohabitation Date">
+                                                <has-error :form="form" field="start"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.male_id" type="text" name="male_id"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('male_id') }"
+                                                    placeholder="Male_id">
+                                                <has-error :form="form" field="male_id"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.female_id" type="text" name="female_id"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('female_id') }"
+                                                    placeholder="Female_id">
+                                                <has-error :form="form" field="female_id"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.seperate" type="text" name="seperate"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('seperate') }"
+                                                    placeholder="Seperate Date">
+                                                <has-error :form="form" field="seperate"></has-error>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header">Delivery & Weaning</div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <input v-model="form.delivery" type="text" onfocus="(this.type='date')" name="delivery"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('delivery') }"
+                                                    placeholder="Delivery Date">
+                                                <has-error :form="form" field="delivery"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.del_male"  @change="sumNuma" type="number"
+                                                    name="del_male" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('del_male') }"
+                                                    placeholder="del_male">
+                                                <has-error :form="form" field="del_male"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.del_female" @change="sumNumb"  type="number"
+                                                    name="del_female" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('del_female') }"
+                                                    placeholder="del_female">
+                                                <has-error :form="form" field="del_female"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.tot" type="text" name="tot" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('tot') }"
+                                                    placeholder="Total">
+                                                <has-error :form="form" field="tot"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.weaning" type="text" onfocus="(this.type='date')" name="weaning"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('weaning') }"
+                                                    placeholder="Weaning Date">
+                                                <has-error :form="form" field="weaning"></has-error>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header">Mortality & Total</div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <input :value="this.form.pup_male"  @change="addNuma" type="text" name="pup_male"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('pup_male') }"
+                                                    placeholder="pup_male">
+                                                <has-error :form="form" field="pup_male"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.pup_female" @change="addNumb" type="text" name="pup_female"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('pup_female') }"
+                                                    placeholder="pup_female">
+                                                <has-error :form="form" field="pup_female"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.m_male" type="number" @change="subNuma"
+                                                    name="m_male" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('m_male') }"
+                                                    placeholder="mor_male">
+                                                <has-error :form="form" field="m_male"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input :value="this.form.m_female" type="number" @change="subNumb"
+                                                    name="m_female" class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('m_female') }"
+                                                    placeholder="mor_female">
+                                                <has-error :form="form" field="m_female"></has-error>
+                                            </div>
+                                            <div class="form-group">
+                                                <input v-model="form.total" type="number" name="total"
+                                                    class="form-control"
+                                                    :class="{ 'is-invalid': form.errors.has('total') }"
+                                                    placeholder="total">
+                                                <has-error :form="form" field="total"></has-error>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input v-model="form.start" type="date" @change="addDate" name="start"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('start') }"
-                                    placeholder="start">
-                                <has-error :form="form" field="start"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.male_id" type="text" name="male_id" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('male_id') }" placeholder="male_id">
-                                <has-error :form="form" field="male_id"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.female_id" type="text" name="female_id" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('female_id') }" placeholder="female_id">
-                                <has-error :form="form" field="female_id"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input :value="this.form.seperate" type="text" name="seperate" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('seperate') }" placeholder="seperate">
-                                <has-error :form="form" field="seperate"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.delivery" type="date" name="delivery" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('delivery') }" placeholder="delivery">
-                                <has-error :form="form" field="delivery"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input :value="this.form.del_male" @change="addNuma" type="number" name="del_male"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('del_male') }"
-                                    placeholder="del_male">
-                                <has-error :form="form" field="del_male"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input :value="this.form.del_female" @change="addNumb" type="number" name="del_female"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('del_female') }"
-                                    placeholder="del_female">
-                                <has-error :form="form" field="del_female"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.tot" type="text" name="tot" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('tot') }" placeholder="Details">
-                                <has-error :form="form" field="tot"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.weaning" type="date" name="weaning" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('weaning') }" placeholder="weaning">
-                                <has-error :form="form" field="weaning"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.pup_male" type="text" name="pup_male" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('pup_male') }" placeholder="pup_male">
-                                <has-error :form="form" field="pup_male"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.pup_female" type="text" name="pup_female" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('pup_female') }" placeholder="pup_female">
-                                <has-error :form="form" field="pup_female"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input :value="this.form.m_male" type="number" @change="subNuma" name="m_male"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('m_male') }"
-                                    placeholder="m_male">
-                                <has-error :form="form" field="m_male"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input :value="this.form.m_female" type="number" @change="subNumb" name="m_female"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('m_female') }"
-                                    placeholder="m_female">
-                                <has-error :form="form" field="m_female"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.total" type="number" name="total" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('total') }" placeholder="total">
-                                <has-error :form="form" field="total"></has-error>
-                            </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -218,7 +266,7 @@
                 editmode: false,
                 breedings: {},
                 attachment: null,
-                specs:['Rat','Mice','Ginny pig'],
+                specs: ['Rat', 'Mouse', 'Guinea pig'],
                 forms: new FormData,
                 form: new Form({
                     id: '',
@@ -255,12 +303,28 @@
             },
             //add two Date
             addNuma(event) {
+                this.form.pup_male = event.target.value;
+                this.form.total = parseInt(this.form.pup_male) + parseInt(this.form.pup_female);
+                // this.form.tot = parseInt(this.form.pup_male) + parseInt(this.form.pup_male);
+
+            },
+            sumNuma(event) {
                 this.form.del_male = event.target.value;
-                this.form.total = parseInt(this.form.del_male) + parseInt(this.form.del_female);
+                this.form.tot = parseInt(this.form.del_male) + parseInt(this.form.del_female);
+                // this.form.tot = parseInt(this.form.pup_male) + parseInt(this.form.pup_male);
+
+            },
+            sumNumb(event) {
+                this.form.del_female = event.target.value;
+                this.form.tot = parseInt(this.form.del_male) + parseInt(this.form.del_female);
+                // this.form.tot = parseInt(this.form.pup_male) + parseInt(this.form.pup_male);
+
             },
             addNumb(event) {
-                this.form.del_female = event.target.value;
-                this.form.total = parseInt(this.form.del_male) + parseInt(this.form.del_female);
+                this.form.pup_female = event.target.value;
+                this.form.total = parseInt(this.form.pup_male) + parseInt(this.form.pup_female);
+                // this.form.tot = parseInt(this.form.pup_male) + parseInt(this.form.pup_male);
+
 
             },
             subNuma(event) {
@@ -284,6 +348,19 @@
                 // finalDate = new Date(sumDate); 
                 // console.log(finalDate);
 
+            },
+            exportExcel(type, fn, dl) {
+                var elt = document.getElementById('mytable');
+                var wb = XLSX.utils.table_to_book(elt, {
+                    sheet: "Sheet JS"
+                });
+                return dl ?
+                    XLSX.write(wb, {
+                        bookType: type,
+                        bookSST: true,
+                        type: 'base64'
+                    }) :
+                    XLSX.writeFile(wb, fn || ('breeding.' + (type || 'xlsx')));
             },
             //upload file
             uploadfile() {
@@ -425,4 +502,5 @@
         },
 
     }
+
 </script>

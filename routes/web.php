@@ -18,8 +18,8 @@ Route::get('/', function () {
 // })->name('fileupload');
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('{path}', 'HomeController@index')->where( 'path' , '([A-z\d\-\/_.]+)?' );
-Route::get('/dailyacts','DailyactController@index');
+Route::get('{path}', 'HomeController@index')->where( 'path' , '([A-z\d-/_.]+)?' );
+// Route::get('/dailyacts','DailyactController@index');
 
 
 

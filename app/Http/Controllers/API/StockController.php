@@ -19,7 +19,7 @@ class StockController extends Controller
     }
     public function index()
     {
-        return DB::table('stocks')->paginate(12);
+        return DB::table('stocks')->orderBy('id','DESC')->paginate(7);
         
     }
 

@@ -115,6 +115,10 @@ const app = new Vue({
     methods:{
       searchit: _.debounce(()=>{
         // console.log('broo');
+        // Fire.$emit('searchingDA');
+        // Fire.$emit('searchingAD');
+        // Fire.$emit('searchingBD');
+        // Fire.$emit('searchingST');
         Fire.$emit('searching');
       },1000)
     },

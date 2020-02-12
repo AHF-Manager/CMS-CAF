@@ -16,7 +16,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-bordered">
+                        <table class="table table-hover table-bordered" id="mytable">
                             <thead>
                                 <tr>
                                     <th scope="col">Animal ID</th>
@@ -69,6 +69,9 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
+                        <div class="float-right">
+                            <button class="btn btn-primary btn-sm" id="button-a" @click="exportExcel('xlsx')"><i class="fas fa-download"></i> Export</button>
+                        </div>
                         <pagination :data="animalinfos" @pagination-change-page="getResults"></pagination>
                     </div>
                 </div>
@@ -99,7 +102,7 @@
         </div>
         <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog  modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
@@ -118,22 +121,22 @@
                             </div>
                             <div class="form-group">
                                 <input v-model="form.sr_no" type="text" name="sr_no" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('sr_no') }" placeholder="sr_no">
+                                    :class="{ 'is-invalid': form.errors.has('sr_no') }" placeholder="Sr_no">
                                 <has-error :form="form" field="sr_no"></has-error>
                             </div>
                             <div class="form-group">
-                                <input v-model="form.ai_date" type="date" name="ai_date" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('ai_date') }" placeholder="ai_date">
+                                <input v-model="form.ai_date" type="text" onfocus="(this.type='date')" name="ai_date" class="form-control"
+                                    :class="{ 'is-invalid': form.errors.has('ai_date') }" placeholder="Animal date">
                                 <has-error :form="form" field="ai_date"></has-error>
                             </div>
                             <div class="form-group">
                                 <input v-model="form.group_id" type="text" name="group_id" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('group_id') }" placeholder="group_id">
+                                    :class="{ 'is-invalid': form.errors.has('group_id') }" placeholder="Group_id">
                                 <has-error :form="form" field="group_id"></has-error>
                             </div>
                             <div class="form-group">
                                 <input v-model="form.group_name" type="text" name="group_name" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('group_name') }" placeholder="group_name">
+                                    :class="{ 'is-invalid': form.errors.has('group_name') }" placeholder="Group_name">
                                 <has-error :form="form" field="group_name"></has-error>
                             </div>
                             <div class="form-group">
@@ -149,7 +152,7 @@
                             <div class="form-group">
                                 <input v-model="form.treatment_details" type="text" name="treatment_details"
                                     class="form-control" :class="{ 'is-invalid': form.errors.has('treatment_details') }"
-                                    placeholder="treatment_details">
+                                    placeholder="Treatment_details">
                                 <has-error :form="form" field="treatment_details"></has-error>
                             </div>
                             <div class="form-group">
@@ -160,24 +163,24 @@
                             <div class="form-group">
                                 <input v-model="form.blood_collection" type="text" name="blood_collection"
                                     class="form-control" :class="{ 'is-invalid': form.errors.has('blood_collection') }"
-                                    placeholder="blood_collection">
+                                    placeholder="Blood_collection">
                                 <has-error :form="form" field="blood_collection"></has-error>
                             </div>
                             <div class="form-group">
                                 <input v-model="form.total_animals" type="text" name="total_animals"
                                     class="form-control" :class="{ 'is-invalid': form.errors.has('total_animals') }"
-                                    placeholder="total_animals">
+                                    placeholder="Total_animals">
                                 <has-error :form="form" field="total_animals"></has-error>
                             </div>
                             <div class="form-group">
                                 <input v-model="form.total_groups" type="text" name="total_groups" class="form-control"
                                     :class="{ 'is-invalid': form.errors.has('total_groups') }"
-                                    placeholder="total_groups">
+                                    placeholder="Total_groups">
                                 <has-error :form="form" field="total_groups"></has-error>
                             </div>
                             <div class="form-group">
                                 <input v-model="form.remarks" type="text" name="remarks" class="form-control"
-                                    :class="{ 'is-invalid': form.errors.has('remarks') }" placeholder="remarks">
+                                    :class="{ 'is-invalid': form.errors.has('remarks') }" placeholder="Remarks">
                                 <has-error :form="form" field="remarks"></has-error>
                             </div>
 
@@ -186,7 +189,6 @@
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             <button v-show="editmode" type="submit" class="btn btn-success">Update</button>
                             <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
-
                         </div>
                     </form>
                 </div>
@@ -308,6 +310,13 @@
 
                     })
 
+            },
+            exportExcel(type, fn, dl){
+                 var elt = document.getElementById('mytable');
+                 var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+                return dl ?
+                XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
+                    XLSX.writeFile(wb, fn || ('animaldetails.' + (type || 'xlsx')));
             },
             deleteData(id) {
                 swal.fire({
