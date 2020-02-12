@@ -113,7 +113,7 @@
                                 <li class="nav-item">
                                     <router-link to="/dailyacts" class="nav-link">
                                         <i class="fas fa-calendar nav-icon teal"></i>
-                                        <p>Dailyacts</p>
+                                        <p>Daily Activities</p>
                                     </router-link>
                                 </li>
                                 <li class="nav-item">
@@ -141,7 +141,7 @@
                         <li class="nav-item">
                             <router-link to="/toxicitytesting" class="nav-link">
                                 <i class="fas fa-radiation-alt nav-icon green"></i>
-                                <p>Toxicity Testing</p>
+                                <p>Toxicity Analysis</p>
                             </router-link>
                         </li>
                         @endcan
@@ -212,7 +212,7 @@
                 Central animal Facility MIS.
             </div>
             <!-- Default to the left -->
-            <strong>Copyright  <a href="#">CAF SASTRA</a>.</strong> All rights
+             All rights
             reserved.
         </footer>
     </div>
