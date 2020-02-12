@@ -22,7 +22,7 @@ class CreateDailyactsTable extends Migration
             $table->string('phase');
             $table->string('sr_no');
             $table->string('iaec_no');
-            $table->string('details');
+            $table->string('details')->nullable();
             $table->string('short_title');
         });
         

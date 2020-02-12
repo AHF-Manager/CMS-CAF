@@ -29,7 +29,7 @@ class CreateStocksTable extends Migration
             $table->bigInteger('cb_m');
             $table->bigInteger('cb_f');
             $table->bigInteger('cb_t');
-            $table->string('remarks');
+            $table->string('remarks')->nullable();
 
 
 

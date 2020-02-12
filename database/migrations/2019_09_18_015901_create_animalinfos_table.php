@@ -28,7 +28,7 @@ class CreateAnimalinfosTable extends Migration
             $table->string('blood_collection');
             $table->string('total_animals');
             $table->string('total_groups');
-            $table->text('remarks');
+            $table->text('remarks')->nullable();
 
 
 

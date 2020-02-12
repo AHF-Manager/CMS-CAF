@@ -27,8 +27,8 @@ class CreateBreedingsTable extends Migration
             $table->date('weaning');
             $table->string('pup_male');
             $table->string('pup_female');
-            $table->string('m_male');
-            $table->string('m_female');
+            $table->string('m_male')->nullable();
+            $table->string('m_female')->nullable();
             $table->string('total');
             
 
