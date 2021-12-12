@@ -14,8 +14,7 @@ class CreateBreedingsTable extends Migration
     public function up()
     {
         Schema::create('breedings', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('breed');
+            $table->increments('id');
             $table->date('start');
             $table->string('male_id');
             $table->string('female_id');
@@ -30,6 +29,8 @@ class CreateBreedingsTable extends Migration
             $table->string('m_male')->nullable();
             $table->string('m_female')->nullable();
             $table->string('total');
+            $table->integer('animal_id')->unsigned();
+            $table->foreign('animal_id')->references('id')->on('animals');
             
 
         });

@@ -14,8 +14,7 @@ class CreateAnimalinfosTable extends Migration
     public function up()
     {
         Schema::create('animalinfos', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('animal_id')->unique();
+            $table->increments('id');
 
             $table->string('sr_no');
             $table->date('ai_date');
@@ -29,6 +28,8 @@ class CreateAnimalinfosTable extends Migration
             $table->string('total_animals');
             $table->string('total_groups');
             $table->text('remarks')->nullable();
+            $table->integer('animal_id')->unsigned();
+            $table->foreign('animal_id')->references('id')->on('animals');
 
 
 
