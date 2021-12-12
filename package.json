@@ -1,4 +1,5 @@
 {
+    "name": "cms-caf",
     "private": true,
     "scripts": {
         "dev": "npm run development",

@@ -14,16 +14,16 @@ class CreateDailyactsTable extends Migration
     public function up()
     {
         Schema::create('dailyacts', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->date('dct_date');
             $table->string('day');
             $table->string('count');
             $table->string('activity');
             $table->string('phase');
-            $table->string('sr_no');
-            $table->string('iaec_no');
             $table->string('details')->nullable();
-            $table->string('short_title');
+            $table->integer('id_project_details')->unsigned();
+            $table->foreign('id_project_details')->references('id')->on('projects');
+
         });
         
 
